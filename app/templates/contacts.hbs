@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="col-md-4 contact-list">
+    <a href="/#/new" class="btn btn-success new-contact"><span class="glyphicon glyphicon-plus">&nbsp;</span>New Contact</a>
+    <div class="list-group">
+      {{#each}}
+        {{view 'contact-summary' content=this}}
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    {{outlet}}
+  </div>
+</div>
