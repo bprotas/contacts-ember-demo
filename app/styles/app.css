@@ -1,0 +1,38 @@
+/* Put your CSS here */
+html, body {
+    margin: 20px;
+}
+
+.contact-list .new-contact {
+  width: 100%;
+  margin: 0 0 0.5em 0;
+  height: 3em;
+}
+
+.contact-list .btn-group-vertical {
+  width: 80%
+}
+
+.contact-detail label {
+  text-transform: capitalize;
+}
+
+.panel.contact-detail .panel-heading .description {
+  float: right;
+  margin-top: -1.2em;
+}
+
+.panel.contact-detail .panel-heading .panel-title a {
+  padding: 0;
+  margin: 0;
+  top: -0.1em;
+  left: 0.5em;
+}
+
+.panel.contact-detail .panel-heading input { 
+  color: black;
+}
+
+.panel.contact-detail .row {
+  margin-top: 0.5em;
+}
