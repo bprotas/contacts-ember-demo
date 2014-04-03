@@ -8,16 +8,24 @@ export default Ember.ObjectController.extend(Ember.Evented).extend({
       var controller = this;
 
       this.persist().then(function() {
+        controller.stopEdit();
+        controller.set('save_message', 'Saved!');
         controller.trigger('saveSuccess');
-        controller.trigger('endEdit');
       }).catch(function(reason) {
+        controller.set('save_message', reason);
         controller.trigger('saveFail');
-        controller.trigger('endEdit');
       });
     },
 
     cancel: function() {
       this.stopEdit();
+
+      if (this.get('content').id === null) {
+        this.transitionTo('/');
+      }
+      else {
+        this.get('content').rollback();
+      }
     },
 
     edit: function() {

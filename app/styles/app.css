@@ -13,6 +13,11 @@ html, body {
   width: 80%
 }
 
+.contact-list a.disabled {
+  cursor: default;
+  color: #ccc;
+}
+
 .contact-detail label {
   text-transform: capitalize;
 }
