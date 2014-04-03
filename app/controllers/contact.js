@@ -12,7 +12,12 @@ export default Ember.ObjectController.extend(Ember.Evented).extend({
         controller.set('save_message', 'Saved!');
         controller.trigger('saveSuccess');
       }).catch(function(reason) {
-        controller.set('save_message', reason);
+        if (reason.responseText) {
+          controller.set('save_message', reason.responseText);
+        }
+        else {
+          controller.set('save_message', reason);
+        }
         controller.trigger('saveFail');
       });
     },

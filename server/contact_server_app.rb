@@ -30,9 +30,12 @@ class ContactServerApp < Sinatra::Base
 
   post "/contacts" do
     data = parsed_body["contact"]
-    added = contacts.add data["name"].to_s, data["email"].to_s, data
-
-    {"contacts" => added}.to_json
+    begin
+      added = contacts.add data["name"].to_s, data["email"].to_s, data
+      {"contacts" => added}.to_json
+    rescue ContactListException::Duplicate
+      halt 409, "Contact name and email already exists"
+    end
   end
 
   get "/contacts/:id" do |id|
