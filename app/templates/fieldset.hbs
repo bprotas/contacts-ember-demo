@@ -1,0 +1,6 @@
+{{#if view.label}}<label {{bind-attr for=view.label}}>{{view.label}}</label>{{/if}}
+{{#if view.editable}}
+{{view Ember.TextField disabled=view.disableInputs value=view.field classNames="form-control" name=view.label}}
+{{else}}
+  <div>{{view.field}}</div>
+{{/if}}
