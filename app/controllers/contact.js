@@ -1,5 +1,6 @@
 export default Ember.ObjectController.extend(Ember.Evented).extend({
   editable: false,
+  save_message: "",
   actions: {
     save: function() {
       this.trigger('startSave');
@@ -29,13 +30,22 @@ export default Ember.ObjectController.extend(Ember.Evented).extend({
   },
 
   persist: function() {
+    var model_instance;
+
     if (this.isNewModel()) {
-      return(
-        this.store.createRecord('contact', this.get('content')).save()
-      );
+      model_instance = this.store.createRecord('contact', this.get('content'));
     }
     else {
-      return(this.get('content').save())
+      model_instance = this.get('content');
+    }
+
+    var validation_error = model_instance.validate();
+
+    if (validation_error) {
+      return(Promise.reject(validation_error));
+    }
+    else {
+      return(model_instance.save());
     }
   },
 

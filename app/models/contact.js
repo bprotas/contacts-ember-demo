@@ -11,6 +11,18 @@ export default DS.Model.extend({
   city: attr(),
   state: attr(),
   postcode: attr(),
-  pic: attr()
+  pic: attr(),
+
+  validate: function() {
+    if (this.get('name') == '') {
+      return("Must specify name");
+    }
+
+    if (this.get('name') == 'New Contact') {
+      return("Sorry, can't use 'New Contact' as a contact name");
+    }
+    
+    return(null);
+  }
 });
 

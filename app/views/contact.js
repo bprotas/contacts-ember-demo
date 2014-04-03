@@ -1,7 +1,7 @@
 export default Ember.View.extend({
   disableInputs: false,
   editable: false,
-  save_message: "",
+  save_message: Em.computed.alias("controller.save_message"),
   panel_type: "panel-primary",
   controller_events: ['saveSuccess', 'saveFail', 'startEdit', 'endEdit', 'startSave'],
 
@@ -24,8 +24,6 @@ export default Ember.View.extend({
 
   saveSuccess: function() {
     this.set('panel_type', 'panel-success');
-    this.set('save_message', 'Saved!');
-
     setTimeout(jQuery.proxy(this.returnToNormal, this), 3000);
   },
 
@@ -38,7 +36,7 @@ export default Ember.View.extend({
 
   saveFail: function() {
     this.set('panel_type', 'panel-danger');
-    this.set('save_message', 'Save Failed :(');
+    this.set('disableInputs', false);
   },
 
   startEdit: function() {
@@ -48,6 +46,7 @@ export default Ember.View.extend({
   endEdit: function() {
     this.set('editable', false);
     this.set('disableInputs', false);
+    this.returnToNormal();
   },
 
   startSave: function() {
