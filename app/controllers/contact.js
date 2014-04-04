@@ -8,9 +8,8 @@ export default Ember.ObjectController.extend(Ember.Evented).extend({
       var controller = this;
 
       this.persist().then(function() {
-        controller.stopEdit();
-        controller.set('save_message', 'Saved!');
-        controller.trigger('saveSuccess');
+        controller.saveSuccess();
+        controller.transitionTo('/contact/' + controller.get('content').get('id'));
       }).catch(function(reason) {
         if (reason.responseText) {
           controller.set('save_message', reason.responseText);
@@ -38,19 +37,11 @@ export default Ember.ObjectController.extend(Ember.Evented).extend({
     }
   },
 
-  isNewModel: function() {
-    return(this.get('content').id === undefined);
-  },
-
   persist: function() {
     var model_instance;
+    var controller = this;
 
-    if (this.isNewModel()) {
-      model_instance = this.store.createRecord('contact', this.get('content'));
-    }
-    else {
-      model_instance = this.get('content');
-    }
+    model_instance = this.get('content');
 
     var validation_error = model_instance.validate();
 
@@ -70,5 +61,11 @@ export default Ember.ObjectController.extend(Ember.Evented).extend({
   stopEdit: function() {
     this.set('editable', false);
     this.trigger('endEdit');
+  },
+  
+  saveSuccess: function() {
+    this.stopEdit();
+    this.set('save_message', 'Saved!');
+    this.trigger('saveSuccess');
   }
 })

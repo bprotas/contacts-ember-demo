@@ -57,9 +57,7 @@ test('new contacts can be created', function() {
   visit('/new').then(function() {
     fillIn("input[name='name']", "Added Contact");
     fillIn("input[name='email']", "thenewguy@gmail.com");
-    click("button:contains('Save')").then(function() {
-      equal(find('.contact-detail .panel-heading .description').text(), 'Saved!');
-    });
+    click("button:contains('Save')");
   });
 
   andThen(function() {
