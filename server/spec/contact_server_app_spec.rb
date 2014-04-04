@@ -41,26 +41,26 @@ describe ContactServerApp do
   it "can lookup a contact" do
     get url_for("Doug Stamper", "thestamper@hotmail.com")
     parsed_response.should be_emberdata_compatible_for "contacts"
-    parsed_response["contacts"]["name"].should == "Doug Stamper"
-    parsed_response["contacts"]["email"].should == "thestamper@hotmail.com"
+    parsed_response["contact"]["name"].should == "Doug Stamper"
+    parsed_response["contact"]["email"].should == "thestamper@hotmail.com"
   end
 
   it "can update an existing contact" do
     put url_for("Doug Stamper", "thestamper@hotmail.com"),
-      {contact:  {email: "dougstamper@gmail.com"}}.to_json,
+      {contacts:  {email: "dougstamper@gmail.com"}}.to_json,
       "Content-Type" => "application/json"
 
     parsed_response.should be_emberdata_compatible_for "contacts"
 
     get url_for("Doug Stamper", "thestamper@hotmail.com")
     parsed_response.should be_emberdata_compatible_for "contacts"
-    parsed_response["contacts"]["name"].should == "Doug Stamper"
-    parsed_response["contacts"]["email"].should == "dougstamper@gmail.com"
+    parsed_response["contact"]["name"].should == "Doug Stamper"
+    parsed_response["contact"]["email"].should == "dougstamper@gmail.com"
   end
 
   it "can create a new contact" do
     post "/contacts",
-      {contact: {name: "new test contact", email: "newtestcontactemail@gmail.com", sex: "testing"}}.to_json,
+      {contacts: {name: "new test contact", email: "newtestcontactemail@gmail.com", sex: "testing"}}.to_json,
       "Content-Type" => "application/json"
 
     parsed_response.should be_emberdata_compatible_for "contacts"

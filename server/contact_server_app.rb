@@ -5,6 +5,7 @@ Bundler.require
 
 require_relative "models/contact_list.rb"
 require_relative "modules/cors.rb"
+require_relative "lib/ember_data_adapter.rb"
 
 class ContactServerApp < Sinatra::Base
   register Sinatra::CORS
@@ -12,17 +13,19 @@ class ContactServerApp < Sinatra::Base
   def initialize
     super
     @contacts = load_contacts(ENV['contact_list_file'])
+    @ember_data_adapter = EmberDataAdapter.new("contacts")
+    @ember_data_adapter.flatten "address", %w(street city state postcode)
   end
 
   get "/contacts" do
-    {"contacts" => contacts.contacts}.to_json
+    adapter.output contacts.contacts
   end
 
   post "/contacts" do
-    data = parsed_body["contact"]
+    data = adapter.input request.body.read
     begin
       added = contacts.add data["name"].to_s, data["email"].to_s, data
-      {"contacts" => added}.to_json
+      adapter.output added
     rescue ContactListException::Duplicate
       halt 409, "Contact name and email already exists"
     end
@@ -30,20 +33,20 @@ class ContactServerApp < Sinatra::Base
 
   get "/contacts/:id" do |id|
     begin
-      {"contacts" => contacts.lookup(id)}.to_json
-    rescue ContactListException::Notfound
+      adapter.output contacts.lookup(id)
+    rescue ContactListException::NotFound
       halt 404, "contact not found"
     end
   end
 
   put "/contacts/:id" do |id|
     begin
-      contacts.update id, parsed_body["contact"]
+      contacts.update id, adapter.input(request.body.read)
     rescue ContactListException::NotFound
       halt 404, "contact not found"
     end
 
-    {"contacts" => contacts.lookup(id)}.to_json
+    adapter.output contacts.lookup(id)
   end
 
   post "/test/start" do
@@ -52,10 +55,13 @@ class ContactServerApp < Sinatra::Base
     reset_test_contacts
   end
 
+  get "/raw" do
+    contacts.contacts.to_json
+  end
+
   private
   def contacts
     if test_mode?
-      STDERR.puts "in test mode"
       reset_test_contacts if @test_contacts.nil?
       @test_contacts ||= reset_test_contacts
       @test_contacts
@@ -65,7 +71,6 @@ class ContactServerApp < Sinatra::Base
   end
 
   def reset_test_contacts
-    STDERR.puts "resetting test contacts"
     @test_contacts = load_contacts "spec/data/contacts.json"
   end
 
@@ -73,12 +78,11 @@ class ContactServerApp < Sinatra::Base
     request.env['HTTP_TESTMODE'].to_i == 1
   end
 
-  def parsed_body
-    request.body.rewind
-    JSON.parse request.body.read
-  end
-
   def load_contacts(list_file)
     ContactList.new(list_file)
+  end
+
+  def adapter
+    @ember_data_adapter
   end
 end

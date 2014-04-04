@@ -6,7 +6,7 @@ class ContactList
     filename = "data/contacts.json" if filename.nil?
     @contacts = Array(JSON.parse File.new(filename).read).inject({}){|memo, contact|
       contact["id"] = id_for contact
-      memo[contact["id"]] = default_pic flatten_address contact
+      memo[contact["id"]] = default_pic contact
       memo
     }
   end
@@ -16,6 +16,7 @@ class ContactList
   end
 
   def lookup(id)
+    raise ContactListException::NotFound unless @contacts[id.to_s]
     @contacts[id.to_s]
   end
 
@@ -53,14 +54,6 @@ class ContactList
 
   def id_for(contact)
     SipHash.digest("thisissomereallylongseed", "#{contact['name']}::#{contact['email']}".to_s).to_s(36)
-  end
-
-  def flatten_address(contact)
-    address = contact["address"]
-    if address && address.respond_to?('[]')
-      contact.delete "address"
-      contact.merge! address
-    end
   end
 
   def default_pic(contact)
