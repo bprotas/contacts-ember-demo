@@ -4,20 +4,10 @@ require "json"
 Bundler.require
 
 require_relative "models/contact_list.rb"
+require_relative "modules/cors.rb"
 
 class ContactServerApp < Sinatra::Base
-
-  before do
-    # Enable CORS so that this app can respond directly to API calls from the Ember app:
-    content_type :json
-    headers 'Access-Control-Allow-Origin' => '*',
-      'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST', 'PUT'],
-      'Access-Control-Allow-Headers' => ['Content-Type', "testmode"]
-  end
-
-  options "*" do
-    ""
-  end
+  register Sinatra::CORS
 
   def initialize
     super
